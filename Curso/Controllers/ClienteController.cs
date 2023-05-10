@@ -11,14 +11,19 @@ namespace Curso.Controllers
         public class ClientesController : ControllerBase
         {
             private readonly MyDbContext _context;
-            public ClientesController(MyDbContext context)
+            public ClientesController(MyDbContext context, ILogger<ClientesController> logger)
             {
                 _context = context;
-            }
-            [HttpGet(Name = "GetCliente")]
+            _logger = logger;
+        }
+        private readonly ILogger<ClientesController> _logger;
+
+
+        [HttpGet(Name = "GetCliente")]
             public ActionResult<IEnumerable<Cliente>> GetAll()
             {
-                return _context.Clientes.ToList();
+            _logger.LogInformation("Se solicito un GetAll...");
+            return _context.Clientes.ToList();
             }
             [HttpGet("{id}")]
             public ActionResult<Cliente> GetById(int id)
@@ -28,14 +33,16 @@ namespace Curso.Controllers
                 {
                     return NotFound();
                 }
-                return cliente;
+            _logger.LogInformation("Se solicito un Get para el cliente: |{0}",id);
+            return cliente;
             }
             [HttpPost]
             public ActionResult<Cliente> Create(Cliente cliente)
             {
                 _context.Clientes.Add(cliente);
                 _context.SaveChanges();
-                return CreatedAtAction(nameof(GetById), new { id = cliente.Id }, cliente);
+            _logger.LogInformation("Se creo un nuevo cliente: {0}", cliente.Id);
+            return CreatedAtAction(nameof(GetById), new { id = cliente.Id }, cliente);
             }
             [HttpPut("{id}")]
             public ActionResult Update(int id, Cliente client)
@@ -46,7 +53,8 @@ namespace Curso.Controllers
                 }
                 _context.Entry(client).State = EntityState.Modified;
                 _context.SaveChanges();
-                return NoContent();
+            _logger.LogInformation("Se actualizo el cliente: {0}", client.Id);
+            return NoContent();
             }
             [HttpDelete("{id}")]
             public ActionResult<Cliente> Delete(int id)
@@ -58,7 +66,8 @@ namespace Curso.Controllers
                 }
                 _context.Clientes.Remove(client);
                 _context.SaveChanges();
-                return client;
+            _logger.LogInformation("El cliente {0} ha sido eliminado", client.Id);
+            return client;
             }
         }
     
