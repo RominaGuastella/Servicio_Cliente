@@ -5,12 +5,10 @@ namespace Curso.Producer
     public class KafkaProducer : IProducer
     {
         private readonly ProducerConfig _config;
-        
-        //public KafkaProducer(IOptions<KafkaOptions> options, ILogger logger)
-        public KafkaProducer()
+       
+        public KafkaProducer(KafkaOptions options)
         {
-            _config = new ProducerConfig {BootstrapServers = "10.13.19.96:29092" };
-
+            _config = new ProducerConfig { BootstrapServers = options.GetServer() };
         }
 
         public void ProduceMessage(string topic, string message)
@@ -23,7 +21,7 @@ namespace Curso.Producer
                 Console.WriteLine($"Delivered '{deliveryReport.Value}' to '{deliveryReport.TopicPartitionOffset}'");
                 producer.Flush();
             }
-            catch (ProduceException<Null, string> e)
+            catch (ProduceException<Null, string>)
             {
                 throw;
             }

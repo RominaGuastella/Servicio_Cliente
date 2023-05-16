@@ -48,7 +48,7 @@ namespace Curso.Controllers
             _context.Clientes.Add(cliente);
             _context.SaveChanges();
             _logger.LogInformation("Se creo un nuevo cliente: {0}", cliente.Id);
-            _producer.ProduceMessage("Test", $"Se creó el cliente {JsonSerializer.Serialize(cliente)}");
+            _producer.ProduceMessage("Cliente", $"Se creó el cliente {JsonSerializer.Serialize(cliente)}");
             return CreatedAtAction(nameof(GetById), new { id = cliente.Id }, cliente);
         }
 

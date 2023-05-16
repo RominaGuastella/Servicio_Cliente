@@ -2,6 +2,13 @@
 {
     public class KafkaOptions
     {
-        public string BootstrapServers { get; set; }
+        private readonly IConfiguration _configuration;
+        public KafkaOptions(IConfiguration configuration) {
+            _configuration = configuration;
+        }
+
+        public string GetServer() {
+            return _configuration["Kafka:BootstrapServers"];
+        }
     }
 }

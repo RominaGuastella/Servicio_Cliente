@@ -2,8 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using Curso.Context;
 using Serilog;
 using Curso.Producer;
-using Microsoft.Extensions.Configuration;
-using System.Runtime;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,19 +19,9 @@ builder.Services.AddDbContext<MyDbContext>(options => options.UseSqlServer(build
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Kafka
-//Host.CreateDefaultBuilder(args)
-//    .ConfigureAppConfiguration((hostingContext, config) =>
-//    {
-//        config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
-//    })
-//    .ConfigureServices((hostContext, services) =>
-//    {
-//        services.Configure<KafkaOptions>(hostContext.Configuration.GetSection("Kafka"));
-//        services.AddControllers();
-//    });
-
+// KAFKA
 builder.Services.AddScoped<IProducer, KafkaProducer>();
+builder.Services.AddSingleton<KafkaOptions>();
 
 var app = builder.Build();
 // Configure the HTTP request pipeline.
