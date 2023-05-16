@@ -7,7 +7,6 @@ using System.Text.Json;
 
 namespace Curso.Controllers
 {
-    
     [ApiController]
     [Route("api/[controller]")]
     public class ClientesController : ControllerBase
@@ -38,7 +37,21 @@ namespace Curso.Controllers
             {
                 return NotFound();
             }
-            _logger.LogInformation("Se solicito un Get para el cliente: |{0}",id);
+            _producer.ProduceMessage("Cliente", $"Se consultó por id el cliente {JsonSerializer.Serialize(cliente)}");
+            _logger.LogInformation("Se solicito un Get por id para el cliente: |{0}", id);
+            return cliente;
+        }
+
+        [HttpGet("Cuil/{cuil}")]
+        public ActionResult<Cliente> GetByCuil(string cuil)
+        {
+            var cliente = _context.Clientes.FirstOrDefault(cliente => cliente.cuil == cuil);
+            if (cliente == null)
+            {
+                return NotFound();
+            }
+            _producer.ProduceMessage("Cliente", $"Se consultó por cuil el cliente {JsonSerializer.Serialize(cliente)}");
+            _logger.LogInformation("Se solicito un Get por cuil para el cliente: |{0}", cuil);
             return cliente;
         }
 
@@ -53,30 +66,32 @@ namespace Curso.Controllers
         }
 
         [HttpPut("{id}")]
-        public ActionResult Update(int id, Cliente client)
+        public ActionResult Update(int id, Cliente cliente)
         {
-            if (id != client.Id)
+            if (id != cliente.Id)
             {
                 return BadRequest("No debe cambiar el ID del registro");
             }
-            _context.Entry(client).State = EntityState.Modified;
+            _context.Entry(cliente).State = EntityState.Modified;
             _context.SaveChanges();
-            _logger.LogInformation("Se actualizo el cliente: {0}", client.Id);
+            _logger.LogInformation("Se actualizo el cliente: {0}", cliente.Id);
+            _producer.ProduceMessage("Cliente", $"Se actualizó el cliente {JsonSerializer.Serialize(cliente)}");
             return NoContent();
         }
 
         [HttpDelete("{id}")]
         public ActionResult<Cliente> Delete(int id)
         {
-            var client = _context.Clientes.Find(id);
-            if (client == null)
+            var cliente = _context.Clientes.Find(id);
+            if (cliente == null)
             {
                 return NotFound();
             }
-            _context.Clientes.Remove(client);
+            _context.Clientes.Remove(cliente);
             _context.SaveChanges();
-            _logger.LogInformation("El cliente {0} ha sido eliminado", client.Id);
-            return client;
+            _logger.LogInformation("El cliente {0} ha sido eliminado", cliente.Id);
+            _producer.ProduceMessage("Cliente", $"Se eliminó el cliente {JsonSerializer.Serialize(cliente)}");
+            return cliente;
         }
     }
 }
