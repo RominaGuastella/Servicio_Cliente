@@ -25,6 +25,7 @@ namespace Curso.Controllers
         [HttpGet(Name = "GetCliente")]
         public ActionResult<IEnumerable<Cliente>> GetAll()
         {
+            _producer.ProduceMessage("Cliente", $"Se consultan todos los clientes existentes");
             _logger.LogInformation("Se solicito un GetAll...");
             return _context.Clientes.ToList();
         }
@@ -37,8 +38,8 @@ namespace Curso.Controllers
             {
                 return NotFound();
             }
-            _producer.ProduceMessage("Cliente", $"Se consultó por id el cliente {JsonSerializer.Serialize(cliente)}");
-            _logger.LogInformation("Se solicito un Get por id para el cliente: |{0}", id);
+            _producer.ProduceMessage("Cliente", $"Se consulta por id el cliente {JsonSerializer.Serialize(cliente)}");
+            _logger.LogInformation("Se solicita un Get por id para el cliente: |{0}", id);
             return cliente;
         }
 
@@ -50,8 +51,8 @@ namespace Curso.Controllers
             {
                 return NotFound();
             }
-            _producer.ProduceMessage("Cliente", $"Se consultó por cuil el cliente {JsonSerializer.Serialize(cliente)}");
-            _logger.LogInformation("Se solicito un Get por cuil para el cliente: |{0}", cuil);
+            _producer.ProduceMessage("Cliente", $"Se consulta por cuil el cliente {JsonSerializer.Serialize(cliente)}");
+            _logger.LogInformation("Se solicita un Get por cuil para el cliente: |{0}", cuil);
             return cliente;
         }
 
@@ -61,7 +62,7 @@ namespace Curso.Controllers
             _context.Clientes.Add(cliente);
             _context.SaveChanges();
             _logger.LogInformation("Se creo un nuevo cliente: {0}", cliente.Id);
-            _producer.ProduceMessage("Cliente", $"Se creó el cliente {JsonSerializer.Serialize(cliente)}");
+            _producer.ProduceMessage("Cliente", $"Se crea el cliente {JsonSerializer.Serialize(cliente)}");
             return CreatedAtAction(nameof(GetById), new { id = cliente.Id }, cliente);
         }
 
@@ -75,7 +76,7 @@ namespace Curso.Controllers
             _context.Entry(cliente).State = EntityState.Modified;
             _context.SaveChanges();
             _logger.LogInformation("Se actualizo el cliente: {0}", cliente.Id);
-            _producer.ProduceMessage("Cliente", $"Se actualizó el cliente {JsonSerializer.Serialize(cliente)}");
+            _producer.ProduceMessage("Cliente", $"Se actualiza el cliente {JsonSerializer.Serialize(cliente)}");
             return NoContent();
         }
 
@@ -90,7 +91,7 @@ namespace Curso.Controllers
             _context.Clientes.Remove(cliente);
             _context.SaveChanges();
             _logger.LogInformation("El cliente {0} ha sido eliminado", cliente.Id);
-            _producer.ProduceMessage("Cliente", $"Se eliminó el cliente {JsonSerializer.Serialize(cliente)}");
+            _producer.ProduceMessage("Cliente", $"Se elimina el cliente {JsonSerializer.Serialize(cliente)}");
             return cliente;
         }
     }
